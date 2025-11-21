@@ -1,0 +1,82 @@
+Set up a AWS EC2 instance with AMI as ubuntu & instance type as t2.medium
+
+**Security Group Configuration**
+**Make sure EC2 security group allows**
+
+ Port	               Purpose              
+  22                  SSH
+ 3306	                MySQL (optional for external access)
+ 5000	                Backend
+ 5173	                Vite frontend
+80/443	              If using Nginx
+
+**Update & Install Required Packages**
+      **update the server**
+            sudo apt update
+      **install mysql-server**
+            sudo apt install mysql-server -y
+      **install nodejs**
+            curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+            sudo apt install -y nodejs
+      **install npm**
+            sudo apt install npm -y
+
+**✔ Login to MySQL as root**
+      sudo mysql -u root
+
+**Set root password**
+      ALTER USER 'root'@'localhost' 
+      IDENTIFIED WITH mysql_native_password BY 'root';
+      FLUSH PRIVILEGES;
+
+**Create Application Database**
+      CREATE DATABASE user_registration_db;
+
+**Import Existing SQL Dump**
+      mysql -u root -p user_registration_db < /home/ubuntu/workshop3/Dump20251121.sql
+
+**Set Up Node.js Backend**
+**Navigate into the backend folder:**
+
+cd ~/Backend
+Fix permissions (if needed):
+sudo chmod -R 777 /home/ubuntu/Backend/
+
+**Install dependencies:**
+npm install
+
+**Run locally (for testing):**
+npm run start
+
+
+**Set up Frontend**
+**Navigate into the backend folder:**
+
+cd ~/Frontend
+
+**Fix permissions (if needed):**
+sudo chmod -R 777 /home/ubuntu/Frontend/
+
+**Install dependencies:**
+npm install
+
+**Run locally (for testing):**
+npm run dev -- --host
+
+
+------------------------------------------------**setup using pm2**--------------------------------------------------------
+**Install PM2 globally**:
+
+sudo npm install -g pm2
+
+**Start backend:**
+cd Backend
+pm2 start npm --name "backend" -- run start
+
+**Start frontend:**
+cd Frontend
+pm2 start npm --name "frontend" -- run dev -- --host
+
+
+**✔ Backend: http://EC2_PUBLIC_IP:5000
+✔ Frontend (Vite Dev Mode): http://EC2_PUBLIC_IP:5173**
